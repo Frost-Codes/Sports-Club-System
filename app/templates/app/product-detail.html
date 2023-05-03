@@ -1,0 +1,49 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Product Detail {%endblock title %}
+
+{% block main-content %}
+
+<div class="container">
+    <div class="row flex justify-content-between">
+        <div class="img2 col-lg-5 mt-5">
+            <img src="{{ product.image.url }}" alt="" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" style="border-radius: 18px; height: 200px; width: 200px;">
+        </div>
+        <div class="productdetail col-lg-5" style="margin-top: 5px; color: rgb(255, 255, 255);">
+            <h1 style="font-family: Georgia, 'Times New Roman', Times, serif; font-size: 50px;">{{ product.title }}</h1>
+            <small class="text-decoration-line-through" style="color: red;"><strike> Ksh {{ product.previous_price}}</strike></small>
+            <h5>Ksh {{ product.current_price }} /-</h5>
+            
+            <br>
+            <br>
+            <h4>Description</h4>
+            <ul class="fs-5" style="font-family: sans-serif;">
+                <li>
+                    {{ product.description}}
+                </li>
+            </ul>
+            
+            <div style="display: flex;">
+                <form action="/add-to-cart" class="d-line" style="margin: 0px 20px 0px 40px;">
+                    <input type="hidden" name="prod_id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-secondary shadow px-5 py-2 my-4">Add to Cart</button>
+                </form>
+                
+                
+                <a href="{% url 'show-cart' %}" class="btn btn-warning shadow px-5 py-2 my-4">Buy Now</a>
+
+            </div>
+            <div class="text-center">
+                {% if wishlist %}
+                <a pid="{{ product.id }}" class="minus-wishlist btn btn-danger px-5 py-2 my-4" ><i class="fas fa-heart fa-lg"></i></a>
+                {% else %}
+                <a pid="{{ product.id }}" class="plus-wishlist btn btn-success px-5 py-2 my-4" ><i class="fas fa-heart fa-lg"></i></a>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock main-content %}

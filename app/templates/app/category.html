@@ -1,0 +1,44 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Category {% endblock title %}
+
+{% block main-content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="list-group" style="margin: 20px 0px 30px 0px; border-radius: 15px;">
+                {% for value in title %}
+            
+                <a href="{% url 'category-title' value.title %}" class="list-group-item list-group-item-action" aria-current="true">
+
+                {{ value.title }}
+                </a>
+    
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-sm-9" style="margin-top: 20px;">
+            <div class="row">
+                {% for prod in product %}
+
+                <div class="col text-center mb-4">
+                    <a href="{% url 'product-detail' prod.id %}" class="btn">
+                        <div>
+                            <img src="{{ prod.image.url }}" alt="" style="width: 170px; height: 170px; border-radius: 18px;">
+                            <div class="fw-bold" style="color: rgb(209, 242, 252); margin-top: 5px;">{{ prod.title }}</div>
+                            <div class="fw-bold" style="color: rgb(255, 0, 0);"> 
+                                <small class="fw-light text-decoration-line-through">Ksh{{ prod.previous_price }}</small>
+                            </div>
+                            <div class="fw-bold" style="color: rgb(255, 255, 255);"> Ksh {{prod.current_price}} /-</div>
+                        </div>
+                    </a>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock main-content %}

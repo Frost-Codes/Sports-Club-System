@@ -1,0 +1,67 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} profile {% endblock title %}
+
+{% block main-content %}
+
+<div class="container my-5">
+    <div class="row">
+        <h3 style="color: white;"> Welcome <span class="text-capitalize">{{ request.user | capfirst }}</span></h3>
+        
+
+        <div class="col-sm-2 border-end" style="margin-top: 20px;">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'profile' %}" class="btn  btn-primary">Profile</a></li>
+                <li class="d-grid" style="margin-top: 5px;"><a href="{% url 'update-profile' %}" class="btn btn-primary">Update Profile</a></li>
+                <li class="d-grid" style="margin-top: 5px;"><a href="{% url 'address' %}" class="btn btn-primary">Address</a></li>
+                
+
+
+            </ul>
+        </div>
+
+        <div class="col-sm-9 offset-sm-1" style="background-color: white; border-radius: 18px; margin-top: 20px;">
+            <div class="row">
+                {% for display in to_display %}
+
+                <div class="col-sm-6">
+                    <div class="card m-2">
+                        <div class="card-body">
+                            <h3>{{ display.user | capfirst }}</h3>
+                            <p>First Name: {{ display.first_name }}</p>
+                            <p>Last Name: {{ display.last_name }}</p>
+                            <p>Gender: {{ display.gender }}</p>
+                            <p>Next of Kin: {{ display.next_of_kin }}</p>
+                            <p>Next of Kin Contact: {{ display.next_of_kin_contact }}</p>
+                            <p>Date of Birth: {{ display.date_of_birth }}</p>
+                            <p>Contact: {{ display.contact }}</p>
+                            <p>Sub County: {{ display.sub_county }}</p>
+                            <p>School: {{ display.school }}</p>
+                            <p>Games of Interest: {{ display.games_of_interest }}</p>
+                            <p>Height (cm): {{ display.height_in_cm }}</p>
+                            <p>Weight (kgs): {{ display.weight_in_kgs }}</p>
+                            <p>Special Needs: {{ display.special_needs }}</p>
+                            <p class="text-center"><a href="{% url 'update-profile' %}">Update</a></p>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            {% if messages %}
+            {% for msg in messages %}
+    
+            <div class="alert alert-{{msg.tags}}" role="alert" style="margin-top: 10px;">{{ msg }}</div>
+    
+            {% endfor %}
+            {% endif %}
+
+        </div>
+
+
+    
+    </div>
+</div>
+
+{% endblock main-content %}

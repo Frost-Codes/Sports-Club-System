@@ -1,0 +1,59 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} profile {% endblock title %}
+
+{% block main-content %}
+
+<div class="container my-5">
+    <div class="row">
+        <h3 style="color: white;"> Welcome <span class="text-capitalize">{{ request.user | capfirst }}</span></h3>
+        
+
+        <div class="col-sm-2 border-end" style="margin-top: 20px;">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'profile' %}" class="btn  btn-primary">Profile</a></li>
+                <li class="d-grid" style="margin-top: 5px;"><a href="{% url 'address' %}" class="btn btn-primary">Address</a></li>
+                <li class="d-grid" style="margin-top: 5px;"><a href="{% url 'update-address' %}" class="btn btn-primary">Add Address</a></li>
+
+
+            </ul>
+        </div>
+
+        <div class="col-sm-9 offset-sm-1" style="background-color: white; border-radius: 18px; margin-top: 20px;">
+            <div class="row">
+                {% for display in to_display %}
+
+                <div class="col-sm-6">
+                    <div class="card m-2">
+                        <div class="card-body">
+                            <h3>Address {{ forloop.counter }}</h3>
+                            <p>Name: {{ display.user | capfirst }}</p>
+                            <p>County: {{ display.county }}</p>
+                            <p>Town: {{ display.town }}</p>
+                            <p>Zip Code: {{ display.zip_code }}</p>
+                            <p>Pick Up Station: {{ display.pick_up_station }}</p>
+                            <p>Contact: {{ display.contact }}</p>
+                            <p class="text-center"><a href="{% url 'address-update' pk=display.id %}" type="button" class="btn btn-success">Update</a></p>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            {% if messages %}
+            {% for msg in messages %}
+    
+            <div class="alert alert-{{msg.tags}}" role="alert" style="margin-top: 10px;">{{ msg }}</div>
+    
+            {% endfor %}
+            {% endif %}
+
+        </div>
+
+
+    
+    </div>
+</div>
+
+{% endblock main-content %}

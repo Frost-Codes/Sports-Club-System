@@ -1,0 +1,114 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Update Profile {% endblock title %}
+
+{% block main-content %}
+
+<div class="container my-5">
+    <div class="row">
+        <h3 style="color: white;"> Welcome <span class="text-capitalize">{{ request.user | capfirst }}</span></h3>
+        
+
+        <div class="col-sm-2 border-end" style="margin-top: 20px;">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'profile' %}" class="btn  btn-primary">Profile</a><li>
+                <li class="d-grid" style="margin-top: 5px;"><a href="{% url 'address' %}" class="btn btn-primary">Address</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 offset-sm-1" style="background-color: white; border-radius: 18px; margin-top: 20px;">
+            <form action="" method="post" style="padding: 30px;">
+                {%  csrf_token %}
+                {% for field in form %}
+                {{field.label_tag}} {{field}} <small class="text-danger"> {{ field.errors | striptags}}</small>
+                <br>
+                {% endfor %}
+                {% if request.user.is_authenticated %}
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+
+                {% endif %}
+
+                {% if form.non_field_errors %}
+
+                {% for error in form.non_field_errors %}
+
+                <p class="alert alert-danger my-3">{{ error }}</p>
+
+                {% endfor %}
+
+                {% endif %}
+
+                {% if messages %}
+                {% for msg in messages %}
+
+                <div class="alert alert-{{msg.tags}}" role="alert" style="margin-top: 10px;">{{ msg }}</div>
+
+                {% endfor %}
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+
+
+    let county_field = document.getElementById("id_county")
+    county_field.addEventListener("change", getCountyId)
+
+    let town_field = document.getElementById("id_town")
+
+    function getCountyId(eventElement){
+        console.log(eventElement.target.value)
+        let county_id = eventElement.target.value
+
+        const data = {id : county_id};
+
+        let url = "{% url 'towns' %}"
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+
+        .then(data => {
+            console.log('Success', data);
+            
+            town_field.innerHTML = '<option value="" selected="">---------</option>'
+            for(let i = 0; i < data.length; i++ ){
+                town_field.innerHTML += `<option value=" ${data[i]["id"]} " selected="">   ${data[i]["town"]}</option>`
+            }
+        })
+
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+{% endblock main-content%}
