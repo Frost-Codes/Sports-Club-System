@@ -9,5 +9,5 @@
 📌Add products to their wishlist
 📌Select desired address for shipping
 📌Customers can checkout and pay using razor pay
-📌Admins can requlate shop products e.g stock level
+📌Admins can regulate shop products e.g stock level
 📌Admins can change order status
