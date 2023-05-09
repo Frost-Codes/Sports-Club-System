@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import Product, CustomerDetails, Town, CustomerAddress, Cart, WishList
+from .models import Product, CustomerDetails, Town, CustomerAddress, Cart, WishList, Payment, OrderPlaced
 from django.db.models import Count
 from .forms import CustomerRegistrationForm, CustomerDetailsForm, CustomerAddressForm
 from django.contrib import messages
@@ -9,6 +9,10 @@ from django.http import JsonResponse
 from django.db.models import Q  # Selecting multiple conditions
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from .info import *
+from intasend import APIService
+from django.shortcuts import HttpResponse
+
 
 # Create your views here.
 
@@ -357,6 +361,14 @@ def selected_address(request):
         current_address = CustomerAddress.objects.get(id=address_id)
         shipping_cost = current_address.town.shipping_cost
 
+        previous_shipping_address = CustomerAddress.objects.get(Q(user=request.user) & Q(selected=True))
+        if previous_shipping_address:
+            previous_shipping_address.selected = False
+            previous_shipping_address.save()
+
+        current_address.selected = True
+        current_address.save()
+
         cart = Cart.objects.filter(user=request.user)
         amount = 0
         for p in cart:
@@ -420,3 +432,45 @@ def remove_wishlist(request):
         data = {}
         return JsonResponse(data)
 
+
+def orders(request):
+    order_placed = OrderPlaced.objects.filter(user=request.user)
+    total_cart_items = get_total_cart_items(request)
+    total_wishlist_items = get_total_wishlist_items(request)
+    return render(request, 'app/orders.html', locals())
+
+
+def make_payment(request):
+    shipping_address = CustomerAddress.objects.get(Q(user=request.user) & Q(selected=True))
+    if shipping_address:
+        shipping_cost = shipping_address.town.shipping_cost
+
+        cart = Cart.objects.filter(user=request.user)
+        amount = 0
+        for p in cart:
+            price = p.quantity * p.product.current_price
+            amount += price
+        total_amount = check_for_discount(amount=amount) + shipping_cost
+
+        service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
+        create_order_response = service.collect.mpesa_stk_push(phone_number=254727832018,
+                                                               email="joe@doe.com", amount=total_amount,
+                                                               narrative="Purchase")
+
+        user = request.user
+        inta_send_order_id = create_order_response['id']
+        inta_send_payment_status = create_order_response['invoice']['state']
+        invoice_id = create_order_response['invoice']['invoice_id']
+        payment = Payment(user=user, amount=total_amount, inta_send_order_id=inta_send_order_id,
+                          inta_send_payment_status=inta_send_payment_status,
+                          inta_send_invoice_id=invoice_id)
+        payment.save()
+
+        customer = CustomerDetails.objects.get(id=request.user.id)
+
+        for item in cart:
+            OrderPlaced(user=user, customer=customer, product=item.product, quantity=item.quantity,
+                        payment=payment, shipping_address=shipping_address).save()
+            item.delete()
+
+    return redirect('orders')

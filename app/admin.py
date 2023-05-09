@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Product, CustomerDetails, CustomerAddress, County, Town, Cart, WishList
+from .models import Product, CustomerDetails, CustomerAddress, County, Town, Cart, WishList,\
+    Payment, OrderPlaced
 from django.utils.html import format_html
 from django.urls import reverse
 # Register your models here.
@@ -20,7 +21,7 @@ class CustomerDetailsModelAdmin(admin.ModelAdmin):
 
 @admin.register(CustomerAddress)
 class CustomerAddressModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'county', 'town', 'pick_up_station', 'zip_code', 'contact']
+    list_display = ['id', 'user', 'county', 'town', 'pick_up_station', 'zip_code', 'contact', 'selected']
 
 
 @admin.register(County)
@@ -45,4 +46,17 @@ class CartModelAdmin(admin.ModelAdmin):
 @admin.register(WishList)
 class WishListModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'product']
+
+
+@admin.register(Payment)
+class PaymentModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'amount', 'inta_send_order_id', 'inta_send_payment_status',
+                    'inta_send_invoice_id', 'paid']
+
+
+@admin.register(OrderPlaced)
+class OrderPlacedModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'customer', 'product', 'quantity', 'order_date', 'status', 'payment',
+                    'shipping_address']
+
 

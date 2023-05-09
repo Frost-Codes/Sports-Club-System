@@ -64,6 +64,7 @@ class CustomerAddress(models.Model):
     pick_up_station = models.CharField(max_length=100)
     zip_code = models.IntegerField()
     contact = models.IntegerField()
+    selected = models.BooleanField(default=False)
 
     def __str__(self):
         return self.pick_up_station
@@ -82,6 +83,37 @@ class Cart(models.Model):
 class WishList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    inta_send_order_id = models.CharField(max_length=100, blank=True, null=True)
+    inta_send_payment_status = models.CharField(max_length=100, blank=True, null=True)
+    inta_send_invoice_id = models.CharField(max_length=100, blank=True, null=True)
+    paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.inta_send_order_id
+
+
+class OrderPlaced(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomerDetails, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default='Pending')
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    shipping_address = models.ForeignKey(CustomerAddress, on_delete=models.CASCADE)
+
+    @property
+    def get_total_cost(self):
+        return self.quantity * self.product.current_price
+
+
+
+
 
 
 

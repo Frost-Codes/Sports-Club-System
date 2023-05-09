@@ -124,3 +124,19 @@ NEXT_OF_KIN = (
     ('Relative', 'Relative'),
     ('Other', 'Other')
 )
+
+
+STATUS_CHOICES = (
+    ('Pending', 'Pending'),
+    ('Accepted', 'Accepted'),
+    ('Packed', 'Packed'),
+    ('Out for Delivery', 'Out for Delivery'),
+    ('Delivered', 'Delivered'),
+    ('Canceled', 'Canceled'),
+
+)
+
+API_PUBLISHABLE_KEY = 'ISPubKey_test_e74e4771-6f9c-45f9-bbcb-fe6dd9b6dc4a'
+
+API_TOKEN = 'ISSecretKey_test_1ebb5743-01f2-46b3-92f8-3b242d715db2'
+

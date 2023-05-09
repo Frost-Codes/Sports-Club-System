@@ -64,10 +64,13 @@
                         <label for="totamount" class="form-label"><strong>Total Amount </strong><small>(Including Shipping)</small></label>
                         <input type="number" class="form-control" name="totamount" value="{{ total_amount}}" id="final" readonly>
                     </div>
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Pay</button>
-                    </div>
+                    <!-- <div class="text-end">
+                        <button id="intaSendPayButton" data-amount="10" data-currency="KES" type="submit" class=" intaSendPayButton btn btn-warning mt-3 px-5 fw-bold">Pay</button>
+                    </div> -->
                 </form>
+                <div class="text-end">
+                    <a href="{% url 'payment' %}" class="btn btn-warning mt-3 px-5 fw-bold">Pay</a>
+                </div>
             </div>
 
         </div>
@@ -76,3 +79,11 @@
 
 
 {% endblock main-content %}
+
+{% block payment-gateway %}
+
+<script>
+
+</script>
+
+{% endblock payment-gateway %}
