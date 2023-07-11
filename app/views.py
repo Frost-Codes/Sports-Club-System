@@ -70,12 +70,13 @@ class CategoryTitle(View):
         return render(request, 'app/category.html', locals())
 
 
+# @method_decorator(login_required, name='dispatch')
 class ProductDetail(View):
     def get(self, request, pk):
         total_cart_items = get_total_cart_items(request)
         total_wishlist_items = get_total_wishlist_items(request)
         product = Product.objects.get(pk=pk)
-        wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user))
+        wishlist = WishList.objects.filter(Q(product=product))
         return render(request, 'app/product-detail.html', locals())
 
 
@@ -242,6 +243,7 @@ def get_towns(request):
     return JsonResponse(list(towns.values("id", "town")), safe=False)
 
 
+@login_required
 def add_to_cart(request):
     user = request.user
     product_id = request.GET.get('prod_id')
@@ -257,6 +259,7 @@ def check_for_discount(amount):
         return amount
 
 
+@login_required
 def show_cart(request):
     total_cart_items = get_total_cart_items(request)
     total_wishlist_items = get_total_wishlist_items(request)
@@ -383,6 +386,7 @@ def selected_address(request):
         return JsonResponse(data)
 
 
+@login_required
 def plus_wishlist(request):
     if request.method == 'GET':
         product_id = request.GET['prod_id']
@@ -393,6 +397,7 @@ def plus_wishlist(request):
         return JsonResponse(data)
 
 
+@login_required
 def minus_wishlist(request):
     if request.method == 'GET':
         product_id = request.GET['prod_id']
@@ -451,9 +456,12 @@ def make_payment(request):
             price = p.quantity * p.product.current_price
             amount += price
         total_amount = check_for_discount(amount=amount) + shipping_cost
+        number = shipping_address.contact
+        string_number = '254' + str(number)
+        to_send_number = int(string_number)
 
         service = APIService(token=API_TOKEN, publishable_key=API_PUBLISHABLE_KEY, test=True)
-        create_order_response = service.collect.mpesa_stk_push(phone_number=254727832018,
+        create_order_response = service.collect.mpesa_stk_push(phone_number=to_send_number,
                                                                email="joe@doe.com", amount=total_amount,
                                                                narrative="Purchase")
 
